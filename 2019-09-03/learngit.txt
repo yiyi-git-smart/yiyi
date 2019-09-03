@@ -1,0 +1,26 @@
+git 提交到远程仓库流程
+
+  git init //初始化仓库 新建一个本地空白仓库
+  
+  git add 文件 // 添加文件让git 仓库管理
+
+  git commit -m 文字说明（必须) //提交到本地仓库
+
+  git remote add origin 仓库地址 //重命名仓库名称为origin
+
+  git push -u origin 分支名称  //提交到远程仓库
+
+
+git常用指令
+
+git status //查看文件状态
+
+git branch //查看分支（git 命令行工具中当前所处分支前带*号字体颜色为绿色，其他的为白色）
+
+git branch 分支名称 //创建新的分支
+
+git checkout 分支名称 //切换分支
+
+
+ 
+  
