@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .grid{
+            margin:auto;
+            width: 500px;
+            text-align: center;
+        }
+        .grid table{
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .grid th,td{
+            padding:10px;
+            border: 1px dashed orange;
+            height: 35px;
+        }
+        .grid th{
+            background-color: orange;
+        }
+        .grid .book{
+            padding-bottom: 10px;
+            padding-top: 5px;
+            background-color:#F3dcab;
+        }
+        .grid .total{
+            height: 30px;
+            line-height: 30px;
+            background-color:#F3dcab;
+
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+       <div class="grid">
+           <div>
+               <h1>图书管理</h1>
+               <div class="book">
+                   <div>
+                       <label for="id">
+                           编号：
+                       </label>
+                           <input type="text" id="id"  v-model='id' :disabled='flag' v-focus>
+                           <label for="name">
+                            名称：
+                       </label>
+                       <input type="text" id="name" v-model='name' >
+                       <button @click='handle'  :disabled="submitFlag">提交</button>
+                   </div>
+               </div>
+           </div>
+           <table>
+               <thead>
+                   <tr>
+                       <th>编号</th>
+                       <th>名称</th>
+                       <th>时间</th>
+                       <th>操作</th>
+                   </tr>
+               </thead>
+               <tbody>
+                   <tr  v-for='item in books'>
+                        <td>{{item.id}}</td>
+                        <td>{{item.name}}</td>
+                        <td>{{item.date}}</td>
+                        <td>
+                            <a href=""  @click.prevent='toEdit(item.id)'>修改</a>
+                            <span>|</span>
+                            <a href="" @click.prevent='deleteBook(item.id)'>删除</a>
+                        </td>
+                   </tr>
+               </tbody>
+               <div class="total">
+                   <span>图书总数</span>
+                   <span>{{total}}</span>
+               </div>
+           </table>
+       </div></div>
+    <script src="js/vue.js"></script>
+    <script>
+        Vue.directive('focus',{
+            inserted:function(el){
+                el.focus();
+            }
+        });
+        Vue.filter('format',function(value,arg){
+            function dateFormat(data,format){
+                if(typeof date=='string'){
+                    var mts=date.match(/(\/Date\(\d+)\)\/)/);
+                    if(mts&&mts.length>=3){
+                        date=parseInt(mts[2]);
+                    }
+                }
+                date= new Date(date);
+                if(!date||date.toString()=="Invalid Date"){
+                    return "";
+                }
+                var map={
+                    "M":date.getMonth()+1,
+                    "d":date.getDate(),
+                    "h":date.getHours(),
+                    "s":getSeconds(),
+                    "m":getMinutes(),
+                    "q":Math.floor((date.getMonth()+3)/3),
+                    "S":date.getMilliseconds()
+                };
+                format=format.replace(/([yMdhmsqS])+/g, function(all,t){
+                    var v= map[t];
+                    if(v!==undefined){
+                        if(all.length>1){
+                            v= '0'+v;
+                            v=v.substr(v.length-2);
+                        }
+                        return v;
+                    }else if(t=='y'){
+                        retrun (date.getFullYear()+'').substr(4-all.length);
+                    }
+                    return all;
+                });
+                 return format;
+                }
+                return dateFormat(value , arg);
+                 })
+     var vm=new Vue({
+         el:'#app',
+         data:{
+             id:'',
+             name: '',
+             flag:false,
+             submitFlag: false,
+            books:[{
+                id:1,
+                name:'三国演义',
+                date:'252560997500'
+            },{
+                id:2,
+                name:'水浒传',
+                date:'252560997500'
+            },{
+                id:3,
+                name:'西游记',
+                date:'252560997500'              
+            },{
+                id:4,
+                name:'红楼梦',
+                date:'252560997500'
+            },]
+            },
+        methods:{
+          handle:function(){
+              if(this.flag){
+                  this.books.some((item)=>{
+                      if(item.id==this.id){
+                          item.name=this.name;
+                          //完成更新之后，需终止循环
+                        return true;
+                      }
+
+                  });
+                  this.flag=false;
+              }else{
+                  //添加图书
+              var book={};
+              book.id=this.id;
+              book.name=this.name;
+              book.data='';
+              this.books.push(book);
+              this.id='';
+              this.name='';
+
+              }
+              this.id='';
+              this.name='';
+              
+          },
+          toEdit:function(id){
+              console.log(id)
+              this.flag=true;
+              //跟据id查询要编辑的数据
+             var book= this.books.filter(function(item){
+                  return item.id==id;
+              });
+              console.log(book);
+              //添加到列表
+              this.id=book[0].id;
+              this.name=book[0].name;
+          },
+          deleteBook:function(id){
+              var  index=this.books.findIndex(function(item){
+                  return item.id==id;
+
+              })
+              this.books.splice(index,1);
+          }
+        },
+        computed:{
+            total:function(){
+                return this.books.length;
+            }
+        },
+        watch:{
+            name:function(val){
+                var flag=this.books.some(function(item){
+                    return item.name==val;
+                });
+                if(flag){
+                    this.submitFlag=true;
+                }else{
+                    this.submitFlag=false;
+                }
+            }            
+        }
+     });
+    </script> 
+</body>
+</html>
