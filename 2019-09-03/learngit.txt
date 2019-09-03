@@ -21,6 +21,12 @@ git branch 分支名称 //创建新的分支
 
 git checkout 分支名称 //切换分支
 
+git merge 分支名称 //在要合并成的分支上合并其他分支
+
+git branch -d 分支名称 //删除分支
+
+
+
 
  
   
