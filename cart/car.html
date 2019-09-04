@@ -8,7 +8,10 @@
     <style>
     .container{
         margin:20px auto;
-        width: 200px;
+        width: 300px;
+    }
+    a {
+        text-decoration: none;
     }
     </style>
 </head>
@@ -30,27 +33,51 @@
                 props:['list'],
                 template:`
                 <div>
-                     <div :key='item.id' v-for='item in list' class="item">
+                    <div :key='item.id' v-for='item in list' class="item">
                     <div class="name">{{item.name}}</div>
                     <div class="chang">
-                        <a href="">-</a>
-                        <input type="text" class="num">
-                        <a href="" @click='add'>+</a>
+                        <a href=""  @click.prevent='sub(item.id)'>-</a>
+                        <input type="text" class="num" :value='item.num' @blur='changeNum(item.id,$event)'>
+                        <a href="" @click.prevent='add(item.id)'>+</a>
                     </div>
                     <div class="del" @click='del'>X</div>
                     </div>
                     </div>
                 `,
                 methods:{
+                    changeNum: function(id,event){
+                        console.log(id,event.target.value)
+                        //触发一个自定义事件
+                        this.$emit('change-num',{
+                            id:id,
+                            type:'change',
+                            num:event.target.value
+                        });
+
+                    },
+                    sub: function(id){
+                        this.$emit('change-num',{
+                            id:id,
+                            type:'sub'
+                        });
+
+                    },
+                    add: function(id){
+                        this.$emit('change-num',{
+                            id:id,
+                            type:'add'
+                        });
+
+                    },
                     //告诉父组件要删除哪一id
                     del: function(id){
                         this.$emit('cart-del',id)
                         
                     },
-                    add:function(id){
-                        this.$emit('cart-add',id)
+                    // add:function(id){
+                    //     this.$emit('cart-add',id)
 
-                    }
+                    // }
                     
                 }          
             };
@@ -112,7 +139,7 @@
                 template:`
                 <div class="cart">
                     <cart-title :uname='uname'></cart-title>
-                    <cart-list :list='list' @cart-del='delCart($event)' @cart-add='addCart($event)'></cart-list>
+                    <cart-list :list='list'  @change-num='changeNum($event)' @cart-del='delCart($event)' @cart-add='addCart($event)'></cart-list>
                     <cart-total :list='list'></cart-total>
                     </div>
                 `,
@@ -122,6 +149,40 @@
                     'cart-total':CarTotal
                 },
                 methods:{
+                    changeNum: function(val){
+                        //分为三种情况：输入与变更，+变更 -变更
+                        if(val.type=='change'){
+                            this.list.some(item=>{
+                            if(item.id==val.id){
+                                item.num=val.num;
+                                return true;
+                            }
+                        });
+                        }
+                       
+                        else if(val.type=='sub'){
+                            this.list.some(item=>{
+                                if(item.id==val.id){
+                                    item.num--;
+                                    return true;
+                               
+                                }
+                                });
+                        }
+                        else if(val.type=='add') {
+                                this.list.some(item=>{
+                                if(item.id==val.id){
+                                    item.num++;
+                                    return true;
+                               
+                                }
+                                });   
+
+                                }
+                        //根据子组件中数据，更新list中对应数据
+
+                       
+                    },
                     delCart: function(id){
                         var index=this.list.findIndex(item=>{
                             return item.id==id;
