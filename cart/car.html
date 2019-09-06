@@ -163,9 +163,10 @@
                         else if(val.type=='sub'){
                             this.list.some(item=>{
                                 if(item.id==val.id){
-                                    item.num--;
-                                    return true;
-                               
+                                    if(item.num>0){
+                                        item.num--;
+                                         return true;
+                                    } 
                                 }
                                 });
                         }
@@ -207,6 +208,9 @@
                     }
 
                 })
+                //a 标签没给样式 误认为是减号 
+                // 在一个对象里写了两个同名称的算法
+
            
         </script>
 </body>

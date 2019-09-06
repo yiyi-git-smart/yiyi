@@ -144,4 +144,9 @@ console.log(ret);
 app.post('/abc/123',(req,res)=>{
 res.send('POST请求参数！'+req.body.uname+req.body.pwd)
 
-})
+}）
+
+
+fetch响应格式 
+text():将返回体处理成字符串类型
+json():返回结果为字符串，与JSON.parse(responseText)一样
